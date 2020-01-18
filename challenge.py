@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import enum
+import sys
 import re
 
 def gcd(a,b):
@@ -138,7 +139,7 @@ def evaluate_line(line):
 	Each w_n/d and operator will be separated by one or more spaces.
 	'''
 	#Final return answer
-	answer=None
+	answer=''
 
 	#Next operator to execute
 	next_op=None
@@ -242,8 +243,40 @@ def unit_tests():
 
 		print('%s - Testing "%s" == "%s"'%(outcome,test,answer))
 
+def main():
+	'''
+	Interpreter that continually prompts user for a line, evaluates, and prints the answer.
+	Returns nothing.
+	'''
+	while True:
+
+		#Prompt user
+		sys.stdout.write('? ')
+		sys.stdout.flush()
+
+		#Grab line from user
+		line=sys.stdin.readline()
+
+		#Ctrl+D
+		if not line:
+			print('Exiting...')
+			exit(-1)
+
+		#Attempt evaluation
+		try:
+			answer=str(evaluate_line(line))
+
+		#Error
+		except Exception as error:
+			answer=str(error)
+
+		#Print response
+		print('= %s\n'%answer)
+
+
 if __name__=='__main__':
 	try:
-		unit_tests()
+		#unit_tests()
+		main()
 	except KeyboardInterrupt:
 		exit(-1)
