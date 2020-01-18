@@ -7,6 +7,34 @@ class State(enum.Enum):
 	NUMBER=1
 	OPERATOR=2
 
+class Fraction:
+	def __init__(self,whole,num,den):
+		self.num=whole*den+num
+		self.den=den
+
+	def __add__(self,rhs):
+		num=self.num*rhs.den+self.den*rhs.num
+		den=self.den*rhs.den
+		return Fraction(0,num,den)
+
+	def __add__(self,rhs):
+		num=self.num*rhs.den-self.den*rhs.num
+		den=self.den*rhs.den
+		return Fraction(0,num,den)
+
+	def __mul__(self,rhs):
+		num=self.num*rhs.num
+		den=self.den*rhs.den
+		return Fraction(0,num,den)
+
+	def __div__(self,rhs):
+		num=self.num*rhs.den
+		den=self.den*rhs.num
+		return Fraction(0,num,den)
+
+	def __str__(self):
+		return '%d_%d/%d'%(0,self.num,self.den)
+
 def parse_number(lexeme):
 	'''
 	'''
@@ -25,9 +53,11 @@ def evaluate_line(line):
 	'''
 	'''
 	answer=None
+	next_op=None
 	valid_ops='+-*/'
-	state=State.NUMBER
+	state=State.FIRSTNUMBER
 
+	#Parse line
 	for lexeme in line.strip().split():
 
 		#Found an operator
@@ -53,15 +83,24 @@ def evaluate_line(line):
 				raise Exception('Unexpected number "%s"'%lexeme)
 
 			#Parse 3 parts
-			whole,num,top=number
+			whole,num,den=number
 
 			#First number - no evaluation
 			if state==State.FIRSTNUMBER:
-				pass
+				answer=Fraction(whole,num,den)
 
 			#Another number, evaluate operation
 			else:
-				pass
+				if next_op=='+':
+					answer+=Fraction(whole,num,den)
+				elif next_op=='-':
+					answer-=Fraction(whole,num,den)
+				elif next_op=='*':
+					answer*=Fraction(whole,num,den)
+				elif next_op=='/':
+					answer/=Fraction(whole,num,den)
+				else:
+					raise Exception('Invalid operator "%s"'%next_op)
 
 			#Change state
 			state=State.OPERATOR
