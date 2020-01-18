@@ -28,7 +28,7 @@ class Fraction:
 		den=self._den*rhs._den
 		return Fraction(0,num,den)
 
-	def __add__(self,rhs):
+	def __sub__(self,rhs):
 		num=self._num*rhs._den-self._den*rhs._num
 		den=self._den*rhs._den
 		return Fraction(0,num,den)
@@ -44,6 +44,7 @@ class Fraction:
 		return Fraction(0,num,den)
 
 	def __str__(self):
+
 		whole=self._num//self._den
 		num=self._num%self._den
 		den=self._den
@@ -183,14 +184,14 @@ def unit_tests():
 		print('Testing "%s" == "%s"'%(test,answer))
 
 		try:
-			calculated=evaluate_line(test)
+			calculated=str(evaluate_line(test))
 		except Exception as error:
 			calculated=str(error)
 
 		if calculated==answer:
 			print('\t PASS')
 		else:
-			print('\t FAIL (GOT %s)'%calculated)
+			print('\t FAIL (GOT "%s")'%calculated)
 
 		print('')
 
