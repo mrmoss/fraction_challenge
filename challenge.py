@@ -83,7 +83,7 @@ class Fraction:
         den = self._den*rhs._den
         return Fraction(0, num, den)
 
-    def __div__(self, rhs):
+    def __truediv__(self, rhs):
         num = self._num*rhs._den
         den = self._den*rhs._num
         return Fraction(0, num, den)
@@ -224,6 +224,9 @@ def unit_tests():
     '''
     tests = [('1/2 * 3_3/4', '1_7/8'),
              ('2_3/8 + 9/8', '3_1/2'),
+             ('2_3/8 - 9/8', '1_1/4'),
+             ('2_3/8 * 9/8', '2_43/64'),
+             ('2_3/8 / 9/8', '2_1/9'),
              ('1', '1'),
              ('1/2', '1/2'),
              ('3_1/2', '3_1/2'),
