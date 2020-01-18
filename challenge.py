@@ -199,7 +199,7 @@ def evaluate_line(line):
         for lexeme_ind, lexeme in enumerate(lexemes):
 
             #Found an operator
-            if len(lexeme) == 1 and lexeme in valid_ops:
+            if isinstance(lexeme, str) and len(lexeme) == 1 and lexeme in valid_ops:
 
                 #Wrong state - error
                 if state != State.OPERATOR:
@@ -247,7 +247,7 @@ def evaluate_line(line):
             raise Exception('Unexpected token "%s"'%lexeme)
 
         #Add final answer to stack
-        next_lexemes.append(str(answer))
+        next_lexemes.append(answer)
 
         #Rerun with new batch of lexemes
         lexemes = next_lexemes
@@ -330,5 +330,6 @@ if __name__ == '__main__':
         #unit_tests()
         main()
 
+    #Ctrl+C
     except KeyboardInterrupt:
         sys.exit(-1)
