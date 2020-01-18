@@ -106,13 +106,20 @@ class Fraction:
 
 def parse_number(lexeme):
     '''
-    Parses a number that looks like (where w, n, and d are all ints (- sign is ok)):
+    Lexeme should be a str or Fraction.
+    If lexeme is a Fraction, this function will return it.
+    If lexee is a str, this function parses numbers that
+    look like (where w, n, and d are all ints (- sign is ok)):
         w_n/d
         n/d
         w
-    On success: Returns a 3-tuple (w, n, d).
+    On success: Returns Fraction.
     On failure: Returns None.
     '''
+
+    #Passed a Fraction - return it
+    if isinstance(lexeme, Fraction):
+        return lexeme
 
     #Attempt parsing via regex strings (ORDER OF THESE MATTER)
     exprs = [r'[-]?[\d]+[_][-]?[\d]+[/][-]?[\d]+',
@@ -126,15 +133,15 @@ def parse_number(lexeme):
 
             #w_n/d - no pad
             if len(parts) == 3:
-                return parts
+                return Fraction(*parts)
 
             #n/d - left pad
             if len(parts) == 2:
-                return [0]+parts
+                return Fraction(0, *parts)
 
             #w - right pad
             if len(parts) == 1:
-                return parts+[0, 1]
+                return Fraction(*parts, 0, 1)
 
     #Nothing found - return None
     return None
@@ -158,7 +165,11 @@ def evaluate_line(line):
     '''
     Evaluates a single line of w_n/d fractional numbers with operators: +-*/
     Each w_n/d and operator will be separated by one or more spaces.
+    Returns str.
     '''
+    #Empty line
+    if not line:
+        return Fraction(0, 0, 1)
 
     #Order of operations
     op_order = ['*/', '+-']
@@ -176,7 +187,7 @@ def evaluate_line(line):
         next_lexemes = []
 
         #Final return answer
-        answer = ''
+        answer = Fraction(0, 0, 1)
 
         #Next operator to execute
         next_op = None
@@ -204,9 +215,7 @@ def evaluate_line(line):
                 continue
 
             #Parse lexeme into a Fraction (if needed)
-            number = lexeme
-            if not isinstance(number, Fraction):
-                number = parse_number(lexeme)
+            number = parse_number(lexeme)
 
             #Found number
             if number is not None:
@@ -214,10 +223,6 @@ def evaluate_line(line):
                 #Wrong state - error
                 if state not in [State.FIRSTNUMBER, State.NUMBER]:
                     raise Exception('Unexpected number "%s"'%lexeme)
-
-                #Parse 3 parts if not a Fraction
-                if not isinstance(number, Fraction):
-                    number = Fraction(*number)
 
                 #First number - no evaluation
                 if state == State.FIRSTNUMBER:
@@ -269,7 +274,8 @@ def unit_tests():
              ('2_3/8 9/8', 'Unexpected number "9/8"'),
              ('+ 9/8', 'Unexpected operator "+"'),
              ('9/8 woierjwe', 'Unexpected token "woierjwe"'),
-             ('2 * 3 + 4 * 5', '26')]
+             ('2 * 3 + 4 * 5', '26'),
+             ('', '0')]
 
     for test, answer in tests:
         try:
@@ -321,7 +327,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        #unit_tests()
+        unit_tests()
         main()
 
     except KeyboardInterrupt:
