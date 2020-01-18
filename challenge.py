@@ -115,10 +115,11 @@ def parse_number(lexeme):
     '''
 
     #Attempt parsing via regex strings (ORDER OF THESE MATTER)
-    exprs = [r'[-]?[\d]+[_][-]?[\d]+[/][-]?[\d]+', r'[-]?[\d]+[/][-]?[\d]+', r'[-]?[\d]+']
+    exprs = [r'[-]?[\d]+[_][-]?[\d]+[/][-]?[\d]+',
+             r'[-]?[\d]+[/][-]?[\d]+',
+             r'[-]?[\d]+']
     for expr in exprs:
-
-        if re.findall(expr, lexeme):
+        if ''.join(re.findall(expr, lexeme)) == lexeme:
 
             #Parse all numbers and convert to integers
             parts = [int(num) for num in re.findall(exprs[-1], lexeme)]
