@@ -44,7 +44,11 @@ class Fraction:
 		return Fraction(0,num,den)
 
 	def __str__(self):
-		return '%d_%d/%d'%(0,self._num,self._den)
+		whole=self._num//self._den
+		num=self._num%self._den
+		den=self._den
+
+		return '%d_%d/%d'%(whole,num,den)
 
 def parse_number(lexeme):
 	'''
@@ -52,8 +56,8 @@ def parse_number(lexeme):
 		w_n/d
 		n/d
 		w
-	Returns a 3-tuple (w,n,d) on success.
-	Returns None of failure.
+	On success: Returns a 3-tuple (w,n,d).
+	On failure: Returns None.
 	'''
 
 	#Attempt parsing via regex strings (ORDER OF THESE MATTER)
@@ -65,12 +69,17 @@ def parse_number(lexeme):
 			#Parse all numbers and convert to integers
 			parts=[int(num) for num in re.findall(exprs[-1],lexeme)]
 
-			#Left pad with zeros
-			while len(parts)<3:
-				parts=[0]+parts
+			#w_n/d - no pad
+			if len(parts)==3:
+				return parts
 
-			#Success parse - return
-			return parts
+			#n/d - left pad
+			if len(parts)==2:
+				return [0]+parts
+
+			#w - right pad
+			if len(parts)==1:
+				return parts+[0,1]
 
 	#Nothing found - return None
 	return None
@@ -80,9 +89,16 @@ def evaluate_line(line):
 	Evaluates a single line of w_n/d fractional numbers with operators: +-*/
 	Each w_n/d and operator will be separated by one or more spaces.
 	'''
+	#Final return answer
 	answer=None
+
+	#Next operator to execute
 	next_op=None
+
+	#Valid operators
 	valid_ops='+-*/'
+
+	#State machine state
 	state=State.FIRSTNUMBER
 
 	#Parse line
@@ -126,8 +142,6 @@ def evaluate_line(line):
 
 			#Another number, evaluate operation
 			else:
-
-				#Run operator
 				if next_op=='+':
 					answer+=Fraction(whole,num,den)
 				elif next_op=='-':
@@ -136,6 +150,8 @@ def evaluate_line(line):
 					answer*=Fraction(whole,num,den)
 				elif next_op=='/':
 					answer/=Fraction(whole,num,den)
+
+				#So next_op should never not be something here...but...just in case...
 				else:
 					raise Exception('Invalid operator "%s"'%next_op)
 
@@ -143,6 +159,7 @@ def evaluate_line(line):
 			state=State.OPERATOR
 			continue
 
+		#Not a number or operator - error
 		raise Exception('Unexpected token "%s"'%lexeme)
 
 	return answer
