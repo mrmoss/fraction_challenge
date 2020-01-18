@@ -253,6 +253,11 @@ def main():
     Interpreter that continually prompts user for a line, evaluates, and prints the answer.
     Returns nothing.
     '''
+
+    #Print banner
+    print('Fraction interpreter v1.0')
+    print('Use Ctrl+C or Ctrl+D to exit')
+
     while True:
 
         #Prompt user
