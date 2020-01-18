@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+'''
+This is a simple challenge that does fraction based arithmetic.
+Parts of this are done for the sake of the challenge (gcd and fractional math).
+There are modules that do all of this...but it seemed like cheating...
+'''
 import enum
 import sys
 import re
