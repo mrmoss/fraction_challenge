@@ -28,6 +28,10 @@ Example run:
     ? 2_3/8 + 9/8
     = 3_1/2
 
-## How to run:
+## Running
 
 `./challenge.py`
+
+## Todo
+
+- Probably should have a whole lot more unit tests...
