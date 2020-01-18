@@ -318,7 +318,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        unit_tests()
+        #unit_tests()
         main()
 
     except KeyboardInterrupt:
