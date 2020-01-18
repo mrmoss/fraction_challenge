@@ -2,6 +2,8 @@
 import re
 
 def parse_fraction(lexeme):
+	'''
+	'''
 	exprs=['[-]?[\d]+[_][-]?[\d]+[/][-]?[\d]+','[-]?[\d]+[/][-]?[\d]+','[-]?[\d]+']
 
 	for expr in exprs:
@@ -11,17 +13,34 @@ def parse_fraction(lexeme):
 				parts=[0]+parts
 			return parts
 
-	return None,None,None
+	return None
 
 def evaluate_line(line):
+	'''
+	'''
+	valid_ops='+-*/'
+
 	lexemes=line.strip().split()
 	for lexeme in lexemes:
-		whole,num,top=parse_fraction(lexeme)
-		print(whole,num,top)
+
+		if len(lexeme)==1 and lexeme in valid_ops:
+			next_op=lexeme
+			continue
+
+		fraction=parse_fraction(lexeme)
+
+		if fraction is not None:
+			whole,num,top=fraction
+			print(whole,num,top)
+			continue
+
+		raise Exception('Unexpected token "%s"'%lexeme)
 
 	return 'fail'
 
 def unit_tests():
+	'''
+	'''
 	tests=[('1/2 * 3_3/4','1_7/8'),
 		('2_3/8 + 9/8','3_1/2')]
 
