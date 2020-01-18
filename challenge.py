@@ -276,7 +276,7 @@ def main():
             answer = str(error)
 
         #Print response
-        print(' = %s\n'%answer)
+        print('= %s\n'%answer)
 
 
 if __name__ == '__main__':
