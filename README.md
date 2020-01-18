@@ -14,11 +14,10 @@ as an input and produce a fractional result.
 
 Example run:
 
-  ? 1/2 * 3_3/4
-  = 1_7/8
-  
-  ? 2_3/8 + 9/8
-  = 3_1/2
+    ? 1/2 * 3_3/4
+    = 1_7/8
+    ? 2_3/8 + 9/8
+    = 3_1/2
 
 ## How to run:
 
