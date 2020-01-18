@@ -139,83 +139,107 @@ def parse_number(lexeme):
     #Nothing found - return None
     return None
 
+def apply_operation(lhs, op_str, rhs):
+    '''
+    Applies an operation string as an operation to given lhs and rhs.
+    Returns a Fraction.
+    '''
+    if op_str == '+':
+        return lhs+rhs
+    if op_str == '-':
+        return lhs-rhs
+    if op_str == '*':
+        return lhs*rhs
+    if op_str == '/':
+        return lhs/rhs
+    raise Exception('Invalid operator "%s"'%op_str)
+
 def evaluate_line(line):
     '''
     Evaluates a single line of w_n/d fractional numbers with operators: +-*/
     Each w_n/d and operator will be separated by one or more spaces.
     '''
-    #Final return answer
-    answer = ''
 
-    #Next operator to execute
-    next_op = None
-
-    #Valid operators
-    valid_ops = '+-*/'
-
-    #State machine state
-    state = State.FIRSTNUMBER
-
-    #Parse line
+    #Split line into tokens
     lexemes = line.strip().split()
 
-    #Evaluate line
-    for ind, lexeme in enumerate(lexemes):
+    #Set operators to skip to ensure order of operations
+    for operator_skips in ['+-', '*/']:
 
-        #Found an operator
-        if len(lexeme) == 1 and lexeme in valid_ops:
+        #Final return answer
+        answer = ''
 
-            #Wrong state - error
-            if state != State.OPERATOR:
-                raise Exception('Unexpected operator "%s"'%lexeme)
+        #Next operator to execute
+        next_op = None
 
-            #Last lexeme is an operator - error
-            if ind+1 >= len(lexemes):
-                raise Exception('Expected number after "%s"'%lexeme)
+        #Valid operators
+        valid_ops = '+-*/'
 
-            #Set next op and change state
-            state = State.NUMBER
-            next_op = lexeme
-            continue
+        #State machine state
+        state = State.FIRSTNUMBER
 
-        #Parse number
-        number = parse_number(lexeme)
+        #Scratch array for the next run of lexemes
+        next_lexemes = []
 
-        #Found number
-        if number is not None:
+        #Evaluate line
+        for ind, lexeme in enumerate(lexemes):
 
-            #Wrong state - error
-            if state not in [State.FIRSTNUMBER, State.NUMBER]:
-                raise Exception('Unexpected number "%s"'%lexeme)
+            #Found an operator
+            if len(lexeme) == 1 and lexeme in valid_ops:
 
-            #Parse 3 parts
-            whole, num, den = number
+                #Wrong state - error
+                if state != State.OPERATOR:
+                    raise Exception('Unexpected operator "%s"'%lexeme)
 
-            #First number - no evaluation
-            if state == State.FIRSTNUMBER:
-                answer = Fraction(whole, num, den)
+                #Last lexeme is an operator - error
+                if ind+1 >= len(lexemes):
+                    raise Exception('Expected number after "%s"'%lexeme)
 
-            #Another number, evaluate operation
-            else:
-                if next_op == '+':
-                    answer += Fraction(whole, num, den)
-                elif next_op == '-':
-                    answer -= Fraction(whole, num, den)
-                elif next_op == '*':
-                    answer *= Fraction(whole, num, den)
-                elif next_op == '/':
-                    answer /= Fraction(whole, num, den)
+                #Set next op and change state
+                state = State.NUMBER
+                next_op = lexeme
+                continue
 
-                #So next_op should never not be something here...but...just in case...
+            #Parse number
+            number = parse_number(lexeme)
+
+            #Found number
+            if number is not None:
+
+                #Wrong state - error
+                if state not in [State.FIRSTNUMBER, State.NUMBER]:
+                    raise Exception('Unexpected number "%s"'%lexeme)
+
+                #Parse 3 parts
+                whole, num, den = number
+
+                #First number - no evaluation
+                if state == State.FIRSTNUMBER:
+                    answer = Fraction(whole, num, den)
+
+                #Next operation is in the skips, so we need to skip it this time around
+                #  Add the current answer and the operations to the stack
+                #  Set answer to current node
+                elif next_op in operator_skips:
+                    next_lexemes += [str(answer), next_op]
+                    answer = Fraction(whole, num, den)
+
+                #Another number, evaluate operation
                 else:
-                    raise Exception('Invalid operator "%s"'%next_op)
+                    answer = apply_operation(answer, next_op, Fraction(whole, num, den))
 
-            #Change state
-            state = State.OPERATOR
-            continue
+                #Change state
+                state = State.OPERATOR
+                continue
 
-        #Not a number or operator - error
-        raise Exception('Unexpected token "%s"'%lexeme)
+            #Not a number or operator - error
+            raise Exception('Unexpected token "%s"'%lexeme)
+
+        #Add final answer to stack
+        next_lexemes.append(str(answer))
+
+        #Rerun with new batch of lexemes
+        lexemes = next_lexemes
 
     return answer
 
@@ -238,7 +262,8 @@ def unit_tests():
              ('2_3/8 + +', 'Unexpected operator "+"'),
              ('2_3/8 9/8', 'Unexpected number "9/8"'),
              ('+ 9/8', 'Unexpected operator "+"'),
-             ('9/8 woierjwe', 'Unexpected token "woierjwe"')]
+             ('9/8 woierjwe', 'Unexpected token "woierjwe"'),
+             ('2 * 3 + 4 * 5', '26')]
 
     for test, answer in tests:
         try:
@@ -286,7 +311,6 @@ def main():
 
         #Print response
         print('= %s\n'%answer)
-
 
 if __name__ == '__main__':
     try:
