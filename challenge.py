@@ -2,6 +2,35 @@
 import enum
 import re
 
+def gcd(a,b):
+	'''
+	Classic gcd - this exists in the math module...but for the sake of the challenge?
+	Returns greatest common factor between two ints.
+	Will not return 0.
+	'''
+	while b:
+		a,b=b,a%b
+	if a==0:
+		return 1
+	return a
+
+def simplify_fraction(num,den):
+	'''
+	Simplifies a numerator and denomenator into a whole part, numerator, and denomenator.
+	Returns tuple (whole,num,den).
+	'''
+	whole=num//den
+	num%=den
+
+	while True:
+		g=gcd(num,den)
+		if g==1:
+			break
+		num//=g
+		den//=g
+
+	return whole,num,den
+
 class State(enum.Enum):
 	'''
 	Enum for tracking the state machine for parsing lines.
@@ -45,10 +74,18 @@ class Fraction:
 
 	def __str__(self):
 
-		whole=self._num//self._den
-		num=self._num%self._den
-		den=self._den
+		#Simplify
+		whole,num,den=simplify_fraction(self._num,self._den)
 
+		#No numerator - just return whole
+		if num==0:
+			return '%d'%whole
+
+		#No whole number, just return num/den
+		if whole==0:
+			return '%d/%d'%(num,den)
+
+		#Return all three parts
 		return '%d_%d/%d'%(whole,num,den)
 
 def parse_number(lexeme):
@@ -174,6 +211,9 @@ def unit_tests():
 		('1','1'),
 		('1/2','1/2'),
 		('3_1/2','3_1/2'),
+		('-3_1/2','-3_1/2'),
+		('3_-1/2','-3_1/2'),
+		('3_1/-2','-3_1/2'),
 		('2_3/8 +','Expected number after "+"'),
 		('2_3/8 + +','Unexpected operator "+"'),
 		('2_3/8 9/8','Unexpected number "9/8"'),
