@@ -160,11 +160,17 @@ def evaluate_line(line):
     Each w_n/d and operator will be separated by one or more spaces.
     '''
 
+    #Order of operations
+    op_order = ['*/', '+-']
+
+    #Valid operators
+    valid_ops = ''.join(op_order)
+
     #Split line into tokens
     lexemes = line.strip().split()
 
     #Set operators to skip to ensure order of operations
-    for operator_skips in ['+-', '*/']:
+    for current_ops in op_order:
 
         #Scratch array for the next run of lexemes
         next_lexemes = []
@@ -174,9 +180,6 @@ def evaluate_line(line):
 
         #Next operator to execute
         next_op = None
-
-        #Valid operators
-        valid_ops = '+-*/'
 
         #State machine state
         state = State.FIRSTNUMBER
@@ -220,10 +223,10 @@ def evaluate_line(line):
                 if state == State.FIRSTNUMBER:
                     answer = number
 
-                #Next operation is in the skips, so we need to skip it this time around
+                #Next operation is not in the current order:
                 #  Add the current answer and the operations to the stack
                 #  Set answer to current node
-                elif next_op in operator_skips:
+                elif next_op not in current_ops:
                     next_lexemes += [str(answer), next_op]
                     answer = number
 
