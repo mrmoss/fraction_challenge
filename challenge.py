@@ -49,6 +49,16 @@ class Fraction:
 		'''
 		Takes a whole number, but only uses num and den internally.
 		'''
+
+		#Fix negative values
+		if num<0:
+			whole=-whole
+			num=abs(num)
+		if den<0:
+			whole=-whole
+			den=abs(den)
+
+		#Convert w_n/d to n/d
 		self._num=whole*den+num
 		self._den=den
 
@@ -221,19 +231,16 @@ def unit_tests():
 		('9/8 woierjwe','Unexpected token "woierjwe"')]
 
 	for test,answer in tests:
-		print('Testing "%s" == "%s"'%(test,answer))
-
 		try:
 			calculated=str(evaluate_line(test))
 		except Exception as error:
 			calculated=str(error)
 
-		if calculated==answer:
-			print('\t PASS')
-		else:
-			print('\t FAIL (GOT "%s")'%calculated)
+		outcome='PASS'
+		if calculated!=answer:
+			outcome='FAIL (GOT "%s")'%calculated
 
-		print('')
+		print('%s - Testing "%s" == "%s"'%(outcome,test,answer))
 
 if __name__=='__main__':
 	try:
