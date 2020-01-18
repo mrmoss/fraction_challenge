@@ -22,4 +22,4 @@ Example run:
 
 ## How to run:
 
-  ./challenge.py
+`./challenge.py`
