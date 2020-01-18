@@ -42,13 +42,13 @@ class State(enum.Enum):
     Enum for tracking the state machine for parsing lines.
     '''
     FIRSTNUMBER = 0
-    NUMBER = 1
-    OPERATOR = 2
+    OPERATOR = 1
+    NUMBER = 2
 
 class Fraction:
     '''
     Basic fraction class.
-    There is a Fraction class in the fraction module that would do what we want here...
+    There's a Fraction class in the fraction module that would do what we want here...
     '''
 
     def __init__(self, whole, num, den):
@@ -165,7 +165,7 @@ def evaluate_line(line):
     '''
     Evaluates a single line of w_n/d fractional numbers with operators: +-*/
     Each w_n/d and operator will be separated by one or more spaces.
-    Returns str.
+    Returns Fraction.
     '''
     #Empty line
     if not line:
